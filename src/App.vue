@@ -1,28 +1,16 @@
 <template>
   <div id="app">
-    <header>
-      <AppHeader />
-    </header>
-    <nav>
-      <AppNav />
-    </nav>
-    <main>
+    <AppNav />
+    <div class="page">
       <router-view />
-    </main>
-    <footer>
-      <AppFooter />
-    </footer>
+    </div>
   </div>
 </template>
 
 <script>
-import AppHeader from ".//components/App/AppHeader";
-import AppFooter from "./components/App/AppFooter";
-import AppNav from "./components/App/AppNav";
+import AppNav from "@/components/common/AppNav.vue";
 export default {
   components: {
-    AppHeader,
-    AppFooter,
     AppNav,
   },
 };
@@ -32,24 +20,27 @@ export default {
 <style>
 #app {
   font-family: "Noto Sans KR", sans-serif;
-  display: flex;
-  flex-direction: column;
-  height: 100vh;
 }
-
 ul {
   padding-left: 0;
   list-style: none;
 }
-
-header,
-nav,
-footer {
-  border: 1px solid black;
-  flex: 1;
+.page {
+  padding-top: 3.5rem;
 }
-
-main {
-  flex: 5;
+.search-view,
+.later-view,
+.detail-view {
+  padding-left: 100px;
+  padding-right: 100px;
+}
+.video-list-ul {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
+.video-list-li {
+  margin-bottom: 30px;
 }
 </style>

@@ -1,9 +1,9 @@
 import Vue from "vue";
 import VueRouter from "vue-router";
-import HomeView from "../views/HomeView";
-import SearchView from "../views/SearchView";
-import DetailView from "../views/DetailView";
-import LaterView from "../views/LaterView";
+import HomeView from "../views/HomeView.vue";
+import SearchView from "../views/SearchView.vue";
+import LaterView from "../views/LaterView.vue";
+import DetailView from "../views/DetailView.vue";
 
 Vue.use(VueRouter);
 

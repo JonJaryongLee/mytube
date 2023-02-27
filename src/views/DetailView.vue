@@ -1,14 +1,10 @@
 <template>
-  <div>
-    <router-link to="/">홈으로</router-link>
-    <div v-if="loading">
-      <div class="spinner-border" role="status">
-        <span class="visually-hidden">Loading...</span>
-      </div>
-    </div>
+  <div class="detail-view">
+    <LoadingIcon v-if="isLoading" />
     <div v-else>
+      <ArrowBack />
       <h1>{{ title }}</h1>
-      <div>{{ publishTime }}</div>
+      <div class="upload-date">업로드 날짜: {{ publishedAt }}</div>
       <iframe
         width="560"
         height="315"
@@ -18,64 +14,86 @@
         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
         allowfullscreen
       ></iframe>
-      <p>{{ description }}</p>
-      <div v-if="isLaterVideo">
-        <button v-on:click="unregisterLaterVideo">등록 취소</button>
-      </div>
-      <div v-else>
-        <button v-on:click="registerLaterVideo">나중에 볼 동영상</button>
-      </div>
+      <p class="description">{{ description }}</p>
+      <button
+        v-if="isLaterVideo"
+        type="button"
+        class="btn btn-danger"
+        v-on:click="unregisterLaterVideo"
+      >
+        저장 취소
+      </button>
+      <button
+        v-else
+        type="button"
+        class="btn btn-primary"
+        v-on:click="registerLaterVideo"
+      >
+        동영상 저장
+      </button>
     </div>
   </div>
 </template>
 
 <script>
+import axios from "axios";
+import dayjs from "dayjs";
+import ArrowBack from "@/components/common/ArrowBack.vue";
+import LoadingIcon from "@/components/common/LoadingIcon.vue";
 export default {
+  components: {
+    ArrowBack,
+    LoadingIcon,
+  },
   data() {
     return {
       video: {},
-      isLaterVideo: false,
+      isLaterVideo: null,
     };
   },
   computed: {
-    loading() {
+    isLoading() {
       return this.$store.state.loading;
     },
     title() {
       return this.video.title;
     },
     videoSrc() {
-      return `https://www.youtube.com/embed/${this.video.videoId}`;
+      return `https://www.youtube.com/embed/${this.video.videoId}?autoplay=1`;
     },
     description() {
       return this.video.description;
     },
-    publishTime() {
-      return this.video.publishTime;
+    publishedAt() {
+      return this.video.publishedAt;
     },
   },
-  async created() {
+  created() {
     this.$store.dispatch("changeLoading", true);
-    this.video = await this.$store.dispatch(
-      "getVideo",
-      this.$route.params.videoId
-    );
-    this.isLaterVideo = this.checkVideoInStorage();
-    this.$store.dispatch("changeLoading", false);
+    axios
+      .get(`${this.$store.state.URL}/videos`, {
+        params: {
+          key: this.$store.state.KEY,
+          part: "snippet",
+          id: this.$route.params.videoId,
+        },
+      })
+      .then((response) => {
+        const item = response.data.items[0];
+        this.video = {
+          videoId: item.id,
+          title: item.snippet.title,
+          description: item.snippet.description,
+          publishedAt: dayjs(item.snippet.publishedAt).format("YYYY-MM-DD"),
+        };
+        this.isLaterVideo = this.checkVideoInStorage();
+        this.$store.dispatch("changeLoading", false);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
   },
   methods: {
-    checkVideoInStorage() {
-      const listString = localStorage.getItem("laterVideoList");
-      if (listString === null) {
-        return false;
-      }
-      const laterVideoList = JSON.parse(listString);
-      if (laterVideoList.arr.includes(this.video.videoId)) {
-        return true;
-      } else {
-        return false;
-      }
-    },
     registerLaterVideo() {
       const listString = localStorage.getItem("laterVideoList");
       if (listString === null) {
@@ -98,6 +116,39 @@ export default {
       localStorage.setItem("laterVideoList", JSON.stringify(laterVideoList));
       this.isLaterVideo = false;
     },
+    checkVideoInStorage() {
+      const listString = localStorage.getItem("laterVideoList");
+      if (listString === null) {
+        return false;
+      }
+      const laterVideoList = JSON.parse(listString);
+      if (laterVideoList.arr.includes(this.video.videoId)) {
+        return true;
+      } else {
+        return false;
+      }
+    },
   },
 };
 </script>
+
+<style scoped>
+.loading-icon-container {
+  height: 80vh;
+  width: 100vw;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+h1 {
+  margin-top: 20px;
+  margin-bottom: 20px;
+  font-weight: bold;
+}
+.upload-date {
+  margin-bottom: 20px;
+}
+.description {
+  margin-top: 20px;
+}
+</style>

@@ -1,9 +1,19 @@
 <template>
   <div>
-    <img v-bind:src="thumbnailSrc" v-on:click="moveToDetail" alt="video" />
-    <router-link v-bind:to="detailUrl" class="video-title">{{
-      title
-    }}</router-link>
+    <div
+      class="video-card card text-bg-light border-secondary"
+      v-on:click="moveToDetail"
+    >
+      <img
+        class="card-img-top"
+        v-bind:src="thumbnailSrc"
+        v-on:click="moveToDetail"
+        alt="video"
+      />
+      <div class="card-body">
+        <p class="card-text">{{ title }}</p>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -44,3 +54,14 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+.video-card {
+  width: 300px;
+  height: 300px;
+}
+.card-text {
+  font-size: 1.2rem;
+  font-weight: bolder;
+}
+</style>

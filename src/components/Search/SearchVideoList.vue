@@ -1,7 +1,11 @@
 <template>
   <div>
-    <ul>
-      <li v-for="video in videoList" v-bind:key="video.videoId">
+    <ul class="video-list-ul">
+      <li
+        class="video-list-li"
+        v-for="video in videoList"
+        v-bind:key="video.videoId"
+      >
         <EachVideo v-bind:video="video" />
       </li>
     </ul>
@@ -9,7 +13,7 @@
 </template>
 
 <script>
-import EachVideo from "../Common/EachVideo";
+import EachVideo from "@/components/common/EachVideo.vue";
 export default {
   components: {
     EachVideo,

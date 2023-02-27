@@ -1,12 +1,17 @@
 <template>
   <div>
-    <input
-      type="text"
-      placeholder="검색어를 입력하세요"
-      v-model="userInput"
-      v-on:keyup.enter="getSearchData"
-    />
-    <button v-on:click="getSearchData">찾기</button>
+    <div class="input-group">
+      <input
+        type="text"
+        class="form-control"
+        placeholder="검색어를 입력하세요"
+        v-model="userInput"
+        v-on:keyup.enter="getSearchData"
+      />
+      <button class="btn btn-success" type="button" v-on:click="getSearchData">
+        찾기
+      </button>
+    </div>
   </div>
 </template>
 
@@ -18,10 +23,8 @@ export default {
     };
   },
   methods: {
-    async getSearchData() {
-      this.$store.dispatch("changeLoading", true);
-      await this.$store.dispatch("getSearchData", this.userInput);
-      this.$store.dispatch("changeLoading", false);
+    getSearchData() {
+      this.$store.dispatch("getVideos", this.userInput);
       this.userInput = "";
     },
   },
